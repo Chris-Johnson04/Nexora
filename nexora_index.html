@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexora — Connect. Learn. Grow.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nexora — The academic platform for students. Share resources, find tutors, trade books, and track your learning.">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ───────────────────────────────────────────── */
+    :root {
+      --bg: #07080a;
+      --surface: #0f1117;
+      --surface2: #161b24;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --primary: #4f8aff;
+      --primary-glow: rgba(79,138,255,0.15);
+      --secondary: #a78bfa;
+      --accent: #34d399;
+      --text: #f0f2f5;
+      --text-muted: #8892a4;
+      --text-dim: #4a5568;
+      --gradient: linear-gradient(135deg, #4f8aff, #a78bfa);
+      --glow: 0 0 60px rgba(79,138,255,0.12);
+    }
+
+    /* ── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Noise texture overlay ───────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── Typography ──────────────────────────────────────────── */
+    .display { font-family: 'Syne', sans-serif; }
+
+    /* ── Navbar ──────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(7,8,10,0.7);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .nav.scrolled { padding: 14px 6%; background: rgba(7,8,10,0.92); }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      font-size: 0.85rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: color 0.2s; letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-ghost {
+      padding: 9px 20px; border: 1px solid var(--border2);
+      background: transparent; color: var(--text-muted);
+      font-family: 'Inter', sans-serif; font-size: 0.83rem; font-weight: 500;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--text); }
+    .btn-primary {
+      padding: 9px 22px;
+      background: var(--gradient);
+      border: none; color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.83rem; font-weight: 600;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+      text-decoration: none; display: inline-flex; align-items: center;
+      box-shadow: 0 0 20px rgba(79,138,255,0.2);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(79,138,255,0.35); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text-muted); border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: rgba(7,8,10,0.97); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--text); }
+
+    /* ── Hero ────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 6% 100px;
+      position: relative;
+    }
+
+    /* Radial glow background */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(79,138,255,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px;
+      background: rgba(79,138,255,0.08);
+      border: 1px solid rgba(79,138,255,0.2);
+      border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500; color: var(--primary);
+      margin-bottom: 28px; letter-spacing: 0.04em;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero h1 .accent-text { color: var(--accent); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn-hero {
+      padding: 14px 32px;
+      background: var(--gradient);
+      border: none; color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600;
+      border-radius: 10px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 0 40px rgba(79,138,255,0.25);
+      transition: all 0.25s;
+    }
+    .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(79,138,255,0.4); }
+    .btn-hero-ghost {
+      padding: 14px 32px;
+      background: transparent; border: 1px solid var(--border2);
+      color: var(--text); font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      border-radius: 10px; cursor: pointer;
+      text-decoration: none; transition: all 0.25s;
+    }
+    .btn-hero-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+    .hero-stats {
+      display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+      margin-top: 72px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .hero-stat .num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-stat .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section common ──────────────────────────────────────── */
+    section { padding: 100px 6%; position: relative; z-index: 1; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px;
+      background: rgba(79,138,255,0.08);
+      border: 1px solid rgba(79,138,255,0.15);
+      border-radius: 100px;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--primary); letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--text-muted);
+      max-width: 520px; line-height: 1.7;
+    }
+
+    /* ── Features ────────────────────────────────────────────── */
+    .features { background: var(--surface); }
+    .features-header { text-align: center; margin-bottom: 64px; }
+    .features-header .section-sub { margin: 0 auto; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .feature-card {
+      background: var(--bg);
+      padding: 40px 32px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--primary-glow);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    .feature-card:hover .feature-icon {
+      background: rgba(79,138,255,0.15);
+      border-color: rgba(79,138,255,0.3);
+    }
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 10px; letter-spacing: -0.01em;
+    }
+    .feature-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ── How it works ────────────────────────────────────────── */
+    .how { background: var(--bg); }
+    .how-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .how-steps { display: flex; flex-direction: column; gap: 0; }
+    .how-step {
+      display: flex; gap: 20px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .how-step:last-child { border-bottom: none; }
+    .how-step:hover .step-num { background: var(--gradient); color: #fff; border-color: transparent; }
+    .step-num {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.3s;
+    }
+    .how-step h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.98rem; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .how-step p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; }
+
+    .how-visual {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 40px;
+      min-height: 420px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .how-visual::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(79,138,255,0.1) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+    .mock-card {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      width: 100%; max-width: 300px;
+      margin-bottom: 12px;
+      position: relative; z-index: 1;
+      transition: transform 0.3s;
+    }
+    .mock-card:hover { transform: translateX(4px); }
+    .mock-card .mock-tag {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .mock-card h5 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem; font-weight: 700; margin-bottom: 4px;
+    }
+    .mock-card p { font-size: 0.75rem; color: var(--text-muted); }
+    .mock-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 100px;
+      font-size: 0.65rem; font-weight: 600;
+      background: rgba(52,211,153,0.1); color: var(--accent);
+      border: 1px solid rgba(52,211,153,0.2);
+      margin-top: 8px;
+    }
+
+    /* ── Plans ───────────────────────────────────────────────── */
+    .plans { background: var(--surface); }
+    .plans-header { text-align: center; margin-bottom: 56px; }
+    .plans-header .section-sub { margin: 0 auto; }
+    .plans-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; max-width: 800px; margin: 0 auto;
+    }
+    .plan-card {
+      background: var(--bg);
+      padding: 48px 40px;
+      position: relative; overflow: hidden;
+    }
+    .plan-card.featured {
+      background: linear-gradient(135deg, rgba(79,138,255,0.08), rgba(167,139,250,0.08));
+    }
+    .plan-card.featured::before {
+      content: 'Most Popular';
+      position: absolute; top: 20px; right: 20px;
+      padding: 4px 12px;
+      background: var(--gradient);
+      border-radius: 100px;
+      font-size: 0.68rem; font-weight: 700; color: #fff;
+      letter-spacing: 0.06em;
+    }
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 16px;
+    }
+    .plan-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem; font-weight: 800;
+      letter-spacing: -0.03em; margin-bottom: 4px;
+    }
+    .plan-price span { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+    .plan-card.featured .plan-price {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .plan-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+    .plan-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .plan-features li .check { color: var(--accent); font-size: 0.9rem; flex-shrink: 0; }
+    .plan-features li .cross { color: var(--text-dim); font-size: 0.9rem; flex-shrink: 0; }
+    .plan-features li.active { color: var(--text); }
+    .btn-plan {
+      width: 100%; padding: 13px;
+      border-radius: 8px; font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      text-decoration: none; display: block; text-align: center;
+    }
+    .btn-plan-ghost {
+      background: transparent; border: 1px solid var(--border2);
+      color: var(--text-muted);
+    }
+    .btn-plan-ghost:hover { border-color: var(--primary); color: var(--text); }
+    .btn-plan-fill {
+      background: var(--gradient); border: none; color: #fff;
+      box-shadow: 0 0 30px rgba(79,138,255,0.2);
+    }
+    .btn-plan-fill:hover { transform: translateY(-1px); box-shadow: 0 0 40px rgba(79,138,255,0.35); }
+
+    /* ── Schools ─────────────────────────────────────────────── */
+    .schools-section { background: var(--bg); text-align: center; }
+    .schools-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+    .schools-marquee { overflow: hidden; margin-bottom: 0; }
+    .schools-track {
+      display: flex; gap: 16px;
+      animation: marquee 20s linear infinite;
+      width: max-content;
+    }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .school-chip {
+      padding: 10px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem; font-weight: 500;
+      color: var(--text-muted); white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .school-chip:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── CTA section ─────────────────────────────────────────── */
+    .cta-section {
+      background: var(--surface);
+      text-align: center;
+    }
+    .cta-inner {
+      max-width: 640px; margin: 0 auto;
+      background: linear-gradient(135deg, rgba(79,138,255,0.06), rgba(167,139,250,0.06));
+      border: 1px solid rgba(79,138,255,0.15);
+      border-radius: 20px;
+      padding: 64px 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(79,138,255,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+    }
+    .cta-inner h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 16px; position: relative; z-index: 1;
+    }
+    .cta-inner p {
+      color: var(--text-muted); font-size: 0.95rem;
+      margin-bottom: 36px; line-height: 1.7;
+      position: relative; z-index: 1;
+    }
+    .cta-btns {
+      display: flex; gap: 12px; justify-content: center;
+      position: relative; z-index: 1;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 60px 6% 40px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand p {
+      font-size: 0.84rem; color: var(--text-muted);
+      line-height: 1.7; margin-top: 12px; max-width: 240px;
+    }
+    .footer-col h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a {
+      font-size: 0.84rem; color: var(--text-muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 28px; border-top: 1px solid var(--border);
+      font-size: 0.78rem; color: var(--text-dim);
+    }
+    .lang-toggle {
+      display: flex; gap: 0;
+      border: 1px solid var(--border2); border-radius: 6px; overflow: hidden;
+    }
+    .lang-btn {
+      padding: 6px 14px; font-size: 0.75rem; font-weight: 600;
+      background: transparent; border: none; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;
+    }
+    .lang-btn.active { background: var(--primary); color: #fff; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .nav-actions .btn-ghost { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .how-inner { grid-template-columns: 1fr; gap: 48px; }
+      .how-visual { display: none; }
+      .plans-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 28px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .cta-inner { padding: 40px 28px; }
+      .hero-cta { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="nav" id="nav">
+    <a href="#" class="nav-logo">Nexora</a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#plans">Pricing</a>
+      <a href="#schools">Schools</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html" class="btn-ghost">Sign in</a>
+      <a href="login.html?tab=register" class="btn-primary">Get started →</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#features" onclick="closeMobileMenu()">Features</a>
+    <a href="#how" onclick="closeMobileMenu()">How it works</a>
+    <a href="#plans" onclick="closeMobileMenu()">Pricing</a>
+    <a href="#schools" onclick="closeMobileMenu()">Schools</a>
+    <a href="login.html" class="btn-hero" style="font-size:1rem;">Get started →</a>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Now available across 50+ schools
+    </div>
+    <h1 class="display">
+      The academic platform<br>
+      built for <span class="gradient-text">students</span>,<br>
+      by <span class="accent-text">students.</span>
+    </h1>
+    <p class="hero-sub">
+      Share resources, find tutors, trade books, and track your learning — all in one place, connected to your school.
+    </p>
+    <div class="hero-cta">
+      <a href="login.html?tab=register" class="btn-hero">Start for free →</a>
+      <a href="#features" class="btn-hero-ghost">Explore features</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">50+</div>
+        <div class="label">Partner Schools</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">10K+</div>
+        <div class="label">Documents Shared</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">5K+</div>
+        <div class="label">Active Students</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">2</div>
+        <div class="label">Continents</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <div class="section-tag">✦ Features</div>
+      <h2 class="section-title display">Everything a student needs</h2>
+      <p class="section-sub">From textbooks to tutors — Nexora brings your academic life together in one connected platform.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>Library</h3>
+        <p>Access courses, past exams with solutions, and books uploaded by students from your school — or all schools with Premium.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛒</div>
+        <h3>Marketplace</h3>
+        <p>Buy, sell, or exchange textbooks and school supplies with other students. List items in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎓</div>
+        <h3>Tutoring</h3>
+        <p>Offer or find private lessons by subject, level, and language. Connect with tutors from your campus or beyond.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Performance Tracker</h3>
+        <p>Log your grades, track your progress over time, and identify your weak subjects with visual analytics.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏫</div>
+        <h3>School Network</h3>
+        <p>Your school, your community. See resources specific to your institution — or unlock all schools with Premium.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Messaging</h3>
+        <p>Chat directly with tutors, buyers, or sellers. All conversations in one place, no external apps needed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how" id="how">
+    <div class="how-inner">
+      <div>
+        <div class="section-tag">✦ How it works</div>
+        <h2 class="section-title display">Up and running<br>in minutes</h2>
+        <p class="section-sub" style="margin-bottom:48px;">No complicated setup. Just create your account and start accessing your school's academic community.</p>
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <div>
+              <h4>Create your account</h4>
+              <p>Sign up with your name, school, field of study and level. No school email required.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <div>
+              <h4>Access your school's resources</h4>
+              <p>Browse documents, exams, and courses uploaded by students from your institution.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <div>
+              <h4>Contribute & connect</h4>
+              <p>Upload your notes, list books for sale, or offer tutoring to help your peers.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">04</div>
+            <div>
+              <h4>Go Premium for everything</h4>
+              <p>Unlock resources from all partner schools, unlimited storage, and advanced features.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="how-visual">
+        <div class="mock-card">
+          <div class="mock-tag">📚 Library · KCMS</div>
+          <h5>Data Structures — Final Exam 2024</h5>
+          <p>With solutions · PDF · 24 pages</p>
+          <div class="mock-badge">✓ Free for KCMS students</div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-tag">🎓 Tutoring</div>
+          <h5>Advanced Mathematics — ₹300/hr</h5>
+          <p>Online · English & French · IIT Bombay</p>
+          <div class="mock-badge">⭐ 4.9 rating</div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-tag">🛒 Marketplace</div>
+          <h5>Calculus Textbook — 3rd Edition</h5>
+          <p>Good condition · ₹450 · Bangalore</p>
+          <div class="mock-badge">🔥 Just listed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schools -->
+  <section class="schools-section" id="schools">
+    <div class="section-tag" style="margin:0 auto 20px;">✦ Partner Schools</div>
+    <h2 class="section-title display" style="margin-bottom:12px;">Your school is already here</h2>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:48px;">Or request to add it — we're expanding every week.</p>
+    <div class="schools-marquee">
+      <div class="schools-track" id="schools-track">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Plans -->
+  <section class="plans" id="plans">
+    <div class="plans-header">
+      <div class="section-tag">✦ Pricing</div>
+      <h2 class="section-title display">Simple, honest pricing</h2>
+      <p class="section-sub">Start free. Upgrade when you need more. Cancel anytime.</p>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">₹0 <span>/ month</span></div>
+        <p class="plan-desc">Everything you need to get started with your school's academic community.</p>
+        <ul class="plan-features">
+          <li class="active"><span class="check">✓</span> Access your school's library</li>
+          <li class="active"><span class="check">✓</span> Marketplace (buy & sell)</li>
+          <li class="active"><span class="check">✓</span> Find tutors</li>
+          <li class="active"><span class="check">✓</span> Basic performance tracking</li>
+          <li class="active"><span class="check">✓</span> 500MB storage</li>
+          <li><span class="cross">✗</span> Access all schools' resources</li>
+          <li><span class="cross">✗</span> Unlimited storage</li>
+          <li><span class="cross">✗</span> Priority downloads</li>
+          <li><span class="cross">✗</span> Advanced analytics</li>
+        </ul>
+        <a href="login.html?tab=register" class="btn-plan btn-plan-ghost">Get started free</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">₹299 <span>/ month</span></div>
+        <p class="plan-desc">Unlock the full Nexora network — every school, every resource, every feature.</p>
+        <ul class="plan-features">
+          <li class="active"><span class="check">✓</span> Everything in Free</li>
+          <li class="active"><span class="check">✓</span> All partner schools' libraries</li>
+          <li class="active"><span class="check">✓</span> Unlimited storage</li>
+          <li class="active"><span class="check">✓</span> Priority downloads</li>
+          <li class="active"><span class="check">✓</span> Advanced performance analytics</li>
+          <li class="active"><span class="check">✓</span> Exclusive premium documents</li>
+          <li class="active"><span class="check">✓</span> Early access to new features</li>
+          <li class="active"><span class="check">✓</span> Priority support</li>
+        </ul>
+        <a href="premium.html" class="btn-plan btn-plan-fill">Go Premium →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2 class="display">Ready to learn smarter?</h2>
+      <p>Join thousands of students already using Nexora to share knowledge, find resources, and grow academically.</p>
+      <div class="cta-btns">
+        <a href="login.html?tab=register" class="btn-hero">Create free account →</a>
+        <a href="#plans" class="btn-hero-ghost">See plans</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">Nexora</a>
+        <p>The academic platform connecting students across schools and borders. Learn together.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#features">Library</a></li>
+          <li><a href="#features">Marketplace</a></li>
+          <li><a href="#features">Tutoring</a></li>
+          <li><a href="#features">Performance</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Partner schools</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Nexora. All rights reserved.</p>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    });
+    function closeMobileMenu() {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Schools marquee
+    const schools = [
+      'KCMS — Bangalore', 'IIT Bombay', 'University of Abidjan',
+      'Cheikh Anta Diop University', 'IIT Delhi', 'BITS Pilani',
+      'Université de Dakar', 'NIT Trichy', 'ESCP Abidjan',
+      'University of Mumbai', 'INPHB Yamoussoukro', 'IIM Bangalore',
+      'Université Félix Houphouët-Boigny', 'VIT Vellore', 'Anna University'
+    ];
+    const track = document.getElementById('schools-track');
+    const all = [...schools, ...schools];
+    track.innerHTML = all.map(s => `<div class="school-chip">${s}</div>`).join('');
+
+    // Language toggle
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === lang.toUpperCase()));
+      // TODO: implement i18n
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.feature-card, .how-step, .plan-card, .mock-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
