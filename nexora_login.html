@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign In – Nexora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#07080a; --surface:#0f1117; --surface2:#161b24;
+      --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+      --primary:#4f8aff; --secondary:#a78bfa; --accent:#34d399;
+      --text:#f0f2f5; --text-muted:#8892a4; --text-dim:#4a5568;
+      --gradient:linear-gradient(135deg,#4f8aff,#a78bfa);
+      --error:#f87171; --success:#34d399;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(79,138,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(167,139,250,0.05) 0%,transparent 60%);pointer-events:none;}
+
+    .auth-wrap{width:100%;max-width:440px;position:relative;z-index:1;}
+    .auth-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;display:block;text-align:center;margin-bottom:8px;}
+    .auth-tag{text-align:center;font-size:0.8rem;color:var(--text-dim);margin-bottom:36px;}
+    .auth-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:36px 32px;overflow:hidden;}
+
+    .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px;}
+    .tab{flex:1;padding:12px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;}
+    .tab.active{color:var(--text);border-bottom-color:var(--primary);}
+
+    .tab-content{display:none;flex-direction:column;gap:0;}
+    .tab-content.active{display:flex;}
+
+    .field{position:relative;border:1px solid var(--border2);border-bottom:none;background:var(--surface2);transition:border-color 0.2s;}
+    .field:last-of-type{border-bottom:1px solid var(--border2);}
+    .field:focus-within{background:var(--surface);border-color:var(--primary);z-index:1;}
+    .field input, .field select{width:100%;padding:22px 16px 10px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:0.92rem;color:var(--text);outline:none;appearance:none;}
+    .field select option{background:var(--surface2);color:var(--text);}
+    .field label{position:absolute;top:18px;left:16px;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);pointer-events:none;transition:all 0.15s;}
+    .field:focus-within label,.field input:not(:placeholder-shown)~label,.field select:not([value=''])~label{top:7px;font-size:0.6rem;color:var(--primary);}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;}
+    .grid-2 .field{border-right:none;}
+    .grid-2 .field:last-child{border-right:1px solid var(--border2);}
+
+    .submit-btn{margin-top:20px;width:100%;padding:15px;background:var(--gradient);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;border-radius:10px;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(79,138,255,0.2);}
+    .submit-btn:hover{transform:translateY(-1px);box-shadow:0 0 40px rgba(79,138,255,0.35);}
+    .submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+    .error-msg{margin-top:10px;font-size:0.8rem;color:var(--error);padding:10px 14px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px;display:none;}
+    .success-msg{margin-top:10px;font-size:0.8rem;color:var(--success);padding:10px 14px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:8px;display:none;}
+
+    .back-link{display:block;text-align:center;margin-top:20px;font-size:0.8rem;color:var(--text-dim);text-decoration:none;transition:color 0.2s;}
+    .back-link:hover{color:var(--text);}
+
+    .divider{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:0.75rem;color:var(--text-dim);}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .plan-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(79,138,255,0.08);border:1px solid rgba(79,138,255,0.2);border-radius:100px;font-size:0.72rem;font-weight:600;color:var(--primary);margin:12px auto;text-align:center;width:fit-content;}
+  </style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <a href="nexora_index.html" class="auth-logo">Nexora</a>
+    <p class="auth-tag">Connect · Learn · Grow</p>
+    <div class="auth-box">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="login" class="tab-content active">
+        <div class="field">
+          <input type="email" id="l-email" placeholder=" " autocomplete="email">
+          <label>Email Address</label>
+        </div>
+        <div class="field" style="border-bottom:1px solid var(--border2);">
+          <input type="password" id="l-pass" placeholder=" " autocomplete="current-password">
+          <label>Password</label>
+        </div>
+        <div class="error-msg" id="login-error"></div>
+        <button class="submit-btn" id="login-btn" onclick="handleLogin()">Sign In →</button>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="register" class="tab-content">
+        <div class="field">
+          <input type="text" id="r-name" placeholder=" " autocomplete="name">
+          <label>Full Name</label>
+        </div>
+        <div class="field">
+          <input type="email" id="r-email" placeholder=" " autocomplete="email">
+          <label>Email Address</label>
+        </div>
+        <div class="field">
+          <input type="password" id="r-pass" placeholder=" " autocomplete="new-password">
+          <label>Password (min. 6 characters)</label>
+        </div>
+        <div class="field">
+          <input type="text" id="r-school" placeholder=" " list="schools-list">
+          <label>School / University</label>
+          <datalist id="schools-list"></datalist>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <input type="text" id="r-field" placeholder=" ">
+            <label>Field of Study</label>
+          </div>
+          <div class="field" style="border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);">
+            <select id="r-level">
+              <option value="" disabled selected></option>
+              <option>Year 1</option><option>Year 2</option><option>Year 3</option>
+              <option>Year 4</option><option>Masters 1</option><option>Masters 2</option>
+              <option>PhD</option><option>Other</option>
+            </select>
+            <label>Study Level</label>
+          </div>
+        </div>
+        <div class="field" style="border-bottom:1px solid var(--border2);">
+          <select id="r-lang">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+          </select>
+          <label>Preferred Language</label>
+        </div>
+        <div class="error-msg" id="register-error"></div>
+        <div class="success-msg" id="register-success">Account created! Check your email to confirm, then sign in.</div>
+        <button class="submit-btn" id="register-btn" onclick="handleRegister()">Create Account →</button>
+        <div class="plan-badge">✦ Free plan · Upgrade anytime</div>
+      </div>
+    </div>
+    <a href="nexora_index.html" class="back-link">← Back to Nexora</a>
+  </div>
+
+  <script src="nexora.js"></script>
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['login','register'][i] === name));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === name));
+    }
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'register') switchTab('register');
+
+    // Load schools for datalist
+    NX.ready(async () => {
+      const user = await NX.getUser();
+      if (user) {
+        const redirect = params.get('redirect') || 'nexora_dashboard.html';
+        window.location.href = redirect;
+        return;
+      }
+      const schools = await NX.getSchools();
+      const dl = document.getElementById('schools-list');
+      schools.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.name; dl.appendChild(opt);
+      });
+    });
+
+    function setLoading(btnId, loading, label) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Please wait…' : label;
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('l-email').value.trim();
+      const pass  = document.getElementById('l-pass').value;
+      const errEl = document.getElementById('login-error');
+      errEl.style.display = 'none';
+      if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display='block'; return; }
+      setLoading('login-btn', true, 'Sign In →');
+      NX.ready(async () => {
+        const { data, error } = await NX.signIn(email, pass);
+        setLoading('login-btn', false, 'Sign In →');
+        if (error) { errEl.textContent = error.message; errEl.style.display='block'; return; }
+        const redirect = params.get('redirect') || 'nexora_dashboard.html';
+        window.location.href = redirect;
+      });
+    }
+
+    async function handleRegister() {
+      const name   = document.getElementById('r-name').value.trim();
+      const email  = document.getElementById('r-email').value.trim();
+      const pass   = document.getElementById('r-pass').value;
+      const school = document.getElementById('r-school').value.trim();
+      const field  = document.getElementById('r-field').value.trim();
+      const level  = document.getElementById('r-level').value;
+      const lang   = document.getElementById('r-lang').value;
+      const errEl  = document.getElementById('register-error');
+      const okEl   = document.getElementById('register-success');
+      errEl.style.display='none'; okEl.style.display='none';
+
+      if (!name||!email||!pass||!school||!field||!level) {
+        errEl.textContent='Please fill in all fields.'; errEl.style.display='block'; return;
+      }
+      if (pass.length < 6) {
+        errEl.textContent='Password must be at least 6 characters.'; errEl.style.display='block'; return;
+      }
+      setLoading('register-btn', true, 'Create Account →');
+      NX.ready(async () => {
+        const { data, error } = await NX.signUp(email, pass, {
+          fullName: name, schoolName: school,
+          fieldOfStudy: field, studyLevel: level, language: lang
+        });
+        setLoading('register-btn', false, 'Create Account →');
+        if (error) { errEl.textContent=error.message; errEl.style.display='block'; return; }
+        okEl.style.display='block';
+        setTimeout(() => { switchTab('login'); }, 2500);
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const active = document.querySelector('.tab-content.active');
+        if (active.id === 'login') handleLogin();
+        else handleRegister();
+      }
+    });
+  </script>
+</body>
+</html>
