@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Premium – Nexora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#07080a;--surface:#0f1117;--surface2:#161b24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--primary:#4f8aff;--secondary:#a78bfa;--accent:#34d399;--text:#f0f2f5;--text-muted:#8892a4;--text-dim:#4a5568;--gradient:linear-gradient(135deg,#4f8aff,#a78bfa);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    .nav{position:sticky;top:0;z-index:100;padding:16px 6%;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,10,0.9);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+    .btn-back{padding:8px 18px;background:transparent;border:1px solid var(--border2);color:var(--text-muted);font-family:'Inter',sans-serif;font-size:0.82rem;border-radius:8px;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+    .btn-back:hover{border-color:var(--text-muted);color:var(--text);}
+
+    .page{max-width:900px;margin:0 auto;padding:64px 24px;}
+
+    /* Hero */
+    .premium-hero{text-align:center;margin-bottom:64px;}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:linear-gradient(135deg,rgba(79,138,255,0.1),rgba(167,139,250,0.1));border:1px solid rgba(167,139,250,0.25);border-radius:100px;font-size:0.78rem;font-weight:600;color:var(--secondary);margin-bottom:24px;}
+    .premium-hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:16px;line-height:1.1;}
+    .premium-hero h1 .grad{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .premium-hero p{font-size:1rem;color:var(--text-muted);max-width:520px;margin:0 auto;line-height:1.7;}
+
+    /* Already premium */
+    .already-premium{text-align:center;padding:64px 24px;background:linear-gradient(135deg,rgba(79,138,255,0.06),rgba(167,139,250,0.06));border:1px solid rgba(167,139,250,0.2);border-radius:20px;margin-bottom:48px;}
+    .already-premium .icon{font-size:3rem;margin-bottom:16px;}
+    .already-premium h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px;}
+    .already-premium p{color:var(--text-muted);font-size:0.9rem;}
+
+    /* Plans */
+    .plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:48px;}
+    .plan-card{background:var(--surface);padding:40px 36px;position:relative;overflow:hidden;}
+    .plan-card.featured{background:linear-gradient(135deg,rgba(79,138,255,0.07),rgba(167,139,250,0.07));}
+    .plan-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient);}
+    .plan-card.featured::after{content:'Most Popular';position:absolute;top:20px;right:20px;padding:4px 12px;background:var(--gradient);border-radius:100px;font-size:0.65rem;font-weight:700;color:#fff;letter-spacing:0.06em;}
+    .plan-name{font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;}
+    .plan-price{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px;}
+    .plan-price span{font-size:1rem;color:var(--text-muted);font-weight:400;}
+    .plan-card.featured .plan-price{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .plan-desc{font-size:0.85rem;color:var(--text-muted);margin-bottom:28px;line-height:1.6;}
+    .plan-features{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:32px;}
+    .plan-features li{display:flex;align-items:center;gap:10px;font-size:0.84rem;}
+    .plan-features li.on{color:var(--text);}
+    .plan-features li.off{color:var(--text-dim);}
+    .check{color:var(--accent);font-size:0.85rem;flex-shrink:0;}
+    .cross{color:var(--text-dim);font-size:0.85rem;flex-shrink:0;}
+    .btn-plan{width:100%;padding:13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;display:block;text-align:center;text-decoration:none;}
+    .btn-plan-ghost{background:transparent;border:1px solid var(--border2);color:var(--text-muted);}
+    .btn-plan-ghost:hover{border-color:var(--primary);color:var(--text);}
+    .btn-plan-fill{background:var(--gradient);color:#fff;box-shadow:0 0 30px rgba(79,138,255,0.2);}
+    .btn-plan-fill:hover{transform:translateY(-1px);box-shadow:0 0 40px rgba(79,138,255,0.35);}
+
+    /* Payment methods */
+    .payment-section{margin-bottom:48px;}
+    .payment-section h2{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;text-align:center;}
+    .payment-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    .payment-card{background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+    .payment-card:hover{border-color:var(--primary);background:rgba(79,138,255,0.04);}
+    .payment-card.selected{border-color:var(--primary);background:rgba(79,138,255,0.08);}
+    .payment-card.selected::before{content:'✓';position:absolute;top:10px;right:12px;font-size:0.75rem;color:var(--primary);font-weight:700;}
+    .payment-card .pm-icon{font-size:1.8rem;margin-bottom:8px;}
+    .payment-card .pm-name{font-size:0.82rem;font-weight:600;margin-bottom:4px;}
+    .payment-card .pm-desc{font-size:0.72rem;color:var(--text-dim);}
+
+    /* Checkout */
+    .checkout-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:32px;max-width:480px;margin:0 auto;}
+    .checkout-box h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px;}
+    .checkout-total{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px;}
+    .checkout-total .label{font-size:0.82rem;color:var(--text-muted);}
+    .checkout-total .amount{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .btn-pay{width:100%;padding:15px;background:var(--gradient);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:0.92rem;font-weight:700;border-radius:10px;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(79,138,255,0.25);margin-bottom:12px;}
+    .btn-pay:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(79,138,255,0.4);}
+    .btn-pay:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+    .pay-note{font-size:0.72rem;color:var(--text-dim);text-align:center;line-height:1.6;}
+
+    /* Features comparison */
+    .compare-section{margin-top:64px;}
+    .compare-section h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;text-align:center;margin-bottom:32px;}
+    .compare-table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+    .compare-table th{padding:12px 16px;text-align:left;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+    .compare-table th:not(:first-child){text-align:center;}
+    .compare-table td{padding:14px 16px;border-bottom:1px solid var(--border);color:var(--text-muted);}
+    .compare-table td:not(:first-child){text-align:center;}
+    .compare-table tr:last-child td{border-bottom:none;}
+    .compare-table .feature-name{color:var(--text);font-weight:500;}
+    .cyes{color:var(--accent);font-size:1rem;}
+    .cno{color:var(--text-dim);}
+    .cpremium{color:var(--primary);font-weight:600;font-size:0.82rem;}
+
+    @media(max-width:700px){.plans-grid{grid-template-columns:1fr;}.payment-methods{grid-template-columns:1fr 1fr;}}
+    @media(max-width:480px){.payment-methods{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="nexora_index.html" class="nav-logo">Nexora</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="nexora_dashboard.html" class="btn-back">← Dashboard</a>
+      <a href="#" data-nexora-avatar style="text-decoration:none;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--gradient);color:#fff;font-size:0.8rem;font-weight:700;"></a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <!-- Hero -->
+    <div class="premium-hero">
+      <div class="hero-tag">⚡ Nexora Premium</div>
+      <h1>Unlock the full<br><span class="grad">academic network</span></h1>
+      <p>Access resources from every partner school, get unlimited storage, and supercharge your learning experience.</p>
+    </div>
+
+    <!-- Already premium message (hidden by default) -->
+    <div class="already-premium" id="already-premium" style="display:none;">
+      <div class="icon">⚡</div>
+      <h2>You're already Premium!</h2>
+      <p>You have full access to all schools, unlimited storage, and all Premium features.</p>
+    </div>
+
+    <!-- Plans -->
+    <div class="plans-grid" id="plans-section">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">₹0 <span>/ month</span></div>
+        <p class="plan-desc">Get started with your school's academic community.</p>
+        <ul class="plan-features">
+          <li class="on"><span class="check">✓</span> Your school's library</li>
+          <li class="on"><span class="check">✓</span> Marketplace</li>
+          <li class="on"><span class="check">✓</span> Find tutors</li>
+          <li class="on"><span class="check">✓</span> Basic performance tracking</li>
+          <li class="on"><span class="check">✓</span> 500MB storage</li>
+          <li class="off"><span class="cross">✗</span> All schools' resources</li>
+          <li class="off"><span class="cross">✗</span> Unlimited storage</li>
+          <li class="off"><span class="cross">✗</span> Priority downloads</li>
+          <li class="off"><span class="cross">✗</span> Premium documents</li>
+        </ul>
+        <a href="nexora_dashboard.html" class="btn-plan btn-plan-ghost">Current Plan</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">₹299 <span>/ month</span></div>
+        <p class="plan-desc">The full Nexora experience — every school, every resource.</p>
+        <ul class="plan-features">
+          <li class="on"><span class="check">✓</span> Everything in Free</li>
+          <li class="on"><span class="check">✓</span> All partner schools' libraries</li>
+          <li class="on"><span class="check">✓</span> Unlimited storage</li>
+          <li class="on"><span class="check">✓</span> Priority downloads</li>
+          <li class="on"><span class="check">✓</span> Exclusive premium documents</li>
+          <li class="on"><span class="check">✓</span> Advanced analytics</li>
+          <li class="on"><span class="check">✓</span> Early access to new features</li>
+          <li class="on"><span class="check">✓</span> Priority support</li>
+        </ul>
+        <button class="btn-plan btn-plan-fill" onclick="scrollToCheckout()">Get Premium →</button>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="payment-section" id="payment-section">
+      <h2>Choose Payment Method</h2>
+      <div class="payment-methods">
+        <div class="payment-card selected" id="pm-stripe" onclick="selectPayment('stripe')">
+          <div class="pm-icon">💳</div>
+          <div class="pm-name">Card Payment</div>
+          <div class="pm-desc">Visa, Mastercard, RuPay</div>
+        </div>
+        <div class="payment-card" id="pm-upi" onclick="selectPayment('upi')">
+          <div class="pm-icon">📱</div>
+          <div class="pm-name">UPI / PhonePe</div>
+          <div class="pm-desc">India · Instant transfer</div>
+        </div>
+        <div class="payment-card" id="pm-cinetpay" onclick="selectPayment('cinetpay')">
+          <div class="pm-icon">🌍</div>
+          <div class="pm-name">CinetPay</div>
+          <div class="pm-desc">Africa · Mobile Money</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout -->
+    <div class="checkout-box" id="checkout-box">
+      <h3>Order Summary</h3>
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">
+        <span>Nexora Premium</span><span>₹299</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">
+        <span>Billing cycle</span><span>Monthly</span>
+      </div>
+      <div class="checkout-total">
+        <span class="label">Total Today</span>
+        <span class="amount">₹299</span>
+      </div>
+      <button class="btn-pay" id="pay-btn" onclick="handlePayment()">⚡ Upgrade to Premium →</button>
+      <p class="pay-note">🔒 Secure payment · Cancel anytime · Instant access after payment</p>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="compare-section">
+      <h2>Full Feature Comparison</h2>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Free</th>
+            <th>Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="feature-name">Access your school's library</td><td><span class="cyes">✓</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Access all partner schools</td><td><span class="cno">✗</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Storage</td><td>500 MB</td><td><span class="cpremium">Unlimited</span></td></tr>
+          <tr><td class="feature-name">Marketplace</td><td><span class="cyes">✓</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Find & offer tutoring</td><td><span class="cyes">✓</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Performance tracking</td><td>Basic</td><td><span class="cpremium">Advanced</span></td></tr>
+          <tr><td class="feature-name">Priority downloads</td><td><span class="cno">✗</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Premium-only documents</td><td><span class="cno">✗</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Messaging</td><td><span class="cyes">✓</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Early access to features</td><td><span class="cno">✗</span></td><td><span class="cyes">✓</span></td></tr>
+          <tr><td class="feature-name">Support priority</td><td>Standard</td><td><span class="cpremium">Priority</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="nexora.js"></script>
+  <script>
+    let selectedPayment = 'stripe';
+
+    function selectPayment(method) {
+      selectedPayment = method;
+      document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('pm-'+method).classList.add('selected');
+    }
+
+    function scrollToCheckout() {
+      document.getElementById('checkout-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function handlePayment() {
+      const btn = document.getElementById('pay-btn');
+      btn.disabled = true;
+      btn.textContent = 'Processing…';
+
+      NX.ready(async () => {
+        const user = await NX.getUser();
+        if (!user) { window.location.href = 'nexora_login.html?redirect=nexora_premium.html'; return; }
+
+        // Simulate payment (replace with real Stripe/CinetPay integration)
+        await new Promise(r => setTimeout(r, 1500));
+        const txId = 'SIM-' + Date.now().toString(36).toUpperCase();
+        const success = await NX.upgradeToPremium(selectedPayment, txId);
+
+        if (success) {
+          btn.textContent = '✓ Payment Successful!';
+          btn.style.background = '#34d399';
+          showToast('Welcome to Nexora Premium! 🎉', 'success');
+          setTimeout(() => window.location.href = 'nexora_dashboard.html', 2000);
+        } else {
+          btn.disabled = false;
+          btn.textContent = '⚡ Upgrade to Premium →';
+          showToast('Payment failed. Please try again.', 'error');
+        }
+      });
+    }
+
+    async function init() {
+      NX.ready(async () => {
+        const user = await NX.getUser();
+        if (!user) return;
+        const profile = await NX.getProfile(user.id);
+        if (profile?.plan === 'premium') {
+          document.getElementById('already-premium').style.display = 'block';
+          document.getElementById('plans-section').style.display = 'none';
+          document.getElementById('payment-section').style.display = 'none';
+          document.getElementById('checkout-box').style.display = 'none';
+        }
+        NX.updateHeaderAvatar();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

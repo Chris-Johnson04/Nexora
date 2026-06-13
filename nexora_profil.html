@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile – Nexora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#07080a;--surface:#0f1117;--surface2:#161b24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--primary:#4f8aff;--secondary:#a78bfa;--accent:#34d399;--text:#f0f2f5;--text-muted:#8892a4;--text-dim:#4a5568;--gradient:linear-gradient(135deg,#4f8aff,#a78bfa);--error:#f87171;--success:#34d399;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    /* Nav */
+    .nav{position:sticky;top:0;z-index:100;padding:16px 6%;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,10,0.9);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+    .nav-actions{display:flex;align-items:center;gap:12px;}
+    .btn-back{padding:8px 18px;background:transparent;border:1px solid var(--border2);color:var(--text-muted);font-family:'Inter',sans-serif;font-size:0.82rem;border-radius:8px;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+    .btn-back:hover{border-color:var(--text-muted);color:var(--text);}
+
+    /* Page */
+    .profile-page{max-width:800px;margin:0 auto;padding:48px 24px;}
+
+    /* Avatar section */
+    .profile-hero{display:flex;align-items:center;gap:24px;margin-bottom:40px;padding:32px;background:var(--surface);border:1px solid var(--border2);border-radius:16px;position:relative;overflow:hidden;}
+    .profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);}
+    .profile-avatar-big{width:80px;height:80px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#fff;flex-shrink:0;}
+    .profile-hero-info h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+    .profile-hero-info .school{font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;}
+    .premium-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:linear-gradient(135deg,rgba(79,138,255,0.15),rgba(167,139,250,0.15));border:1px solid rgba(167,139,250,0.3);border-radius:100px;font-size:0.72rem;font-weight:700;color:var(--secondary);}
+    .free-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:100px;font-size:0.72rem;font-weight:600;color:var(--text-dim);}
+
+    /* Tabs */
+    .profile-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px;gap:0;}
+    .ptab{padding:12px 24px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;}
+    .ptab.active{color:var(--text);border-bottom-color:var(--primary);}
+    .ptab-content{display:none;}
+    .ptab-content.active{display:block;}
+
+    /* Form */
+    .form-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+    .form-section-head{padding:16px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;}
+    .form-section-body{padding:20px;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0;}
+    .field{position:relative;border:1px solid var(--border2);border-bottom:none;border-right:none;background:var(--surface2);transition:border-color 0.2s;}
+    .field.full{border-right:1px solid var(--border2);}
+    .field-row .field:last-child{border-right:1px solid var(--border2);}
+    .field:last-of-type{border-bottom:1px solid var(--border2);}
+    .field:focus-within{background:var(--surface);border-color:var(--primary);z-index:1;}
+    .field input,.field select,.field textarea{width:100%;padding:22px 16px 10px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:0.9rem;color:var(--text);outline:none;appearance:none;}
+    .field select option{background:var(--surface2);}
+    .field label{position:absolute;top:18px;left:16px;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);pointer-events:none;transition:all 0.15s;}
+    .field:focus-within label,.field input:not(:placeholder-shown)~label,.field select:valid~label{top:7px;font-size:0.6rem;color:var(--primary);}
+
+    .save-btn{margin-top:16px;padding:13px 28px;background:var(--gradient);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;border-radius:10px;cursor:pointer;transition:all 0.2s;box-shadow:0 0 20px rgba(79,138,255,0.2);}
+    .save-btn:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(79,138,255,0.35);}
+    .save-msg{display:none;margin-top:10px;font-size:0.8rem;padding:10px 14px;border-radius:8px;}
+    .save-msg.success{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);color:var(--success);}
+    .save-msg.error{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--error);}
+
+    /* Orders / docs */
+    .doc-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);font-size:0.85rem;}
+    .doc-row:last-child{border-bottom:none;}
+    .doc-row .name{color:var(--text);font-weight:500;}
+    .doc-row .meta{font-size:0.75rem;color:var(--text-dim);}
+    .doc-type-pill{padding:3px 10px;border-radius:100px;font-size:0.65rem;font-weight:700;background:rgba(79,138,255,0.1);color:var(--primary);border:1px solid rgba(79,138,255,0.2);}
+
+    /* Storage bar */
+    .storage-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;}
+    .storage-label{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;}
+    .storage-bar-track{height:8px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+    .storage-bar-fill{height:100%;border-radius:100px;background:var(--gradient);transition:width 0.8s ease;}
+    .storage-upgrade{margin-top:12px;font-size:0.78rem;color:var(--text-dim);}
+    .storage-upgrade a{color:var(--primary);text-decoration:none;font-weight:500;}
+    .storage-upgrade a:hover{text-decoration:underline;}
+
+    /* Danger zone */
+    .danger-zone{background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.15);border-radius:12px;padding:20px 24px;margin-top:20px;}
+    .danger-zone h3{font-size:0.82rem;font-weight:700;color:var(--error);margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;}
+    .danger-zone p{font-size:0.82rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6;}
+    .btn-danger{padding:10px 22px;background:transparent;border:1px solid var(--error);color:var(--error);font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.2s;margin-right:10px;}
+    .btn-danger:hover{background:var(--error);color:#fff;}
+    .btn-signout-red{padding:10px 22px;background:var(--surface2);border:1px solid var(--border2);color:var(--text-muted);font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.2s;}
+    .btn-signout-red:hover{border-color:var(--text-muted);color:var(--text);}
+
+    .empty-state{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:0.85rem;}
+
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;}.field-row .field{border-right:1px solid var(--border2);}.profile-hero{flex-direction:column;text-align:center;}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="nexora_index.html" class="nav-logo">Nexora</a>
+    <div class="nav-actions">
+      <a href="nexora_dashboard.html" class="btn-back">← Dashboard</a>
+      <a href="#" data-nexora-avatar style="text-decoration:none;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--gradient);color:#fff;font-size:0.8rem;font-weight:700;"></a>
+    </div>
+  </nav>
+
+  <div class="profile-page">
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="profile-avatar-big" id="prof-avatar">?</div>
+      <div class="profile-hero-info">
+        <h2 id="prof-name">Loading…</h2>
+        <div class="school" id="prof-school">—</div>
+        <div id="prof-plan-badge"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="profile-tabs">
+      <button class="ptab active" onclick="switchTab('info')">Personal Info</button>
+      <button class="ptab" onclick="switchTab('documents')">My Documents</button>
+      <button class="ptab" onclick="switchTab('storage')">Storage</button>
+      <button class="ptab" onclick="switchTab('security')">Security</button>
+    </div>
+
+    <!-- TAB: Personal Info -->
+    <div class="ptab-content active" id="tab-info">
+      <div class="form-section">
+        <div class="form-section-head">Personal Information</div>
+        <div class="form-section-body" style="padding:0;">
+          <div class="field-row">
+            <div class="field">
+              <input type="text" id="p-name" placeholder=" " autocomplete="name">
+              <label>Full Name</label>
+            </div>
+            <div class="field" style="border-right:1px solid var(--border2);">
+              <input type="tel" id="p-phone" placeholder=" " autocomplete="tel">
+              <label>Phone Number</label>
+            </div>
+          </div>
+          <div class="field full">
+            <input type="text" id="p-bio" placeholder=" ">
+            <label>Bio / About me</label>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <input type="text" id="p-school" placeholder=" " list="schools-list">
+              <label>School / University</label>
+              <datalist id="schools-list"></datalist>
+            </div>
+            <div class="field" style="border-right:1px solid var(--border2);">
+              <input type="text" id="p-field" placeholder=" ">
+              <label>Field of Study</label>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field" style="border-bottom:1px solid var(--border2);">
+              <select id="p-level">
+                <option value="" disabled></option>
+                <option>Year 1</option><option>Year 2</option><option>Year 3</option>
+                <option>Year 4</option><option>Masters 1</option><option>Masters 2</option>
+                <option>PhD</option><option>Other</option>
+              </select>
+              <label>Study Level</label>
+            </div>
+            <div class="field" style="border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);">
+              <select id="p-lang">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+              <label>Preferred Language</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveProfile()">Save Changes →</button>
+      <div class="save-msg" id="info-msg"></div>
+    </div>
+
+    <!-- TAB: Documents -->
+    <div class="ptab-content" id="tab-documents">
+      <div class="form-section">
+        <div class="form-section-head">Documents I Uploaded</div>
+        <div class="form-section-body" id="my-docs-list">
+          <div class="empty-state">Loading your documents…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Storage -->
+    <div class="ptab-content" id="tab-storage">
+      <div class="storage-wrap">
+        <div class="storage-label">
+          <span>Storage Used</span>
+          <span id="storage-text">0 MB / 500 MB</span>
+        </div>
+        <div class="storage-bar-track">
+          <div class="storage-bar-fill" id="storage-bar" style="width:0%"></div>
+        </div>
+        <div class="storage-upgrade" id="storage-upgrade-msg"></div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-head">Storage Details</div>
+        <div class="form-section-body">
+          <div class="doc-row"><span class="name">Documents uploaded</span><span id="stor-docs">0</span></div>
+          <div class="doc-row"><span class="name">Storage used</span><span id="stor-used">0 MB</span></div>
+          <div class="doc-row"><span class="name">Storage limit</span><span id="stor-limit">500 MB (Free)</span></div>
+          <div class="doc-row"><span class="name">Storage available</span><span id="stor-avail" style="color:var(--accent);">500 MB</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Security -->
+    <div class="ptab-content" id="tab-security">
+      <div class="form-section">
+        <div class="form-section-head">Update Email</div>
+        <div class="form-section-body" style="padding:0;">
+          <div class="field full" style="border-bottom:1px solid var(--border2);">
+            <input type="email" id="p-email" placeholder=" " autocomplete="email">
+            <label>New Email Address</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-section" style="margin-top:16px;">
+        <div class="form-section-head">Change Password</div>
+        <div class="form-section-body" style="padding:0;">
+          <div class="field full">
+            <input type="password" id="p-newpass" placeholder=" ">
+            <label>New Password</label>
+          </div>
+          <div class="field full" style="border-bottom:1px solid var(--border2);">
+            <input type="password" id="p-confirmpass" placeholder=" ">
+            <label>Confirm New Password</label>
+          </div>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveSecurity()">Update Security →</button>
+      <div class="save-msg" id="security-msg"></div>
+
+      <div class="danger-zone" style="margin-top:32px;">
+        <h3>Session & Account</h3>
+        <p>Sign out from your account on this device, or permanently delete your account and all associated data.</p>
+        <button class="btn-signout-red" onclick="NX.signOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="nexora.js"></script>
+  <script>
+    function switchTab(name) {
+      const tabs = ['info','documents','storage','security'];
+      document.querySelectorAll('.ptab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
+      document.querySelectorAll('.ptab-content').forEach(c => c.classList.toggle('active', c.id==='tab-'+name));
+      if (name==='documents') loadMyDocs();
+      if (name==='storage')   loadStorage();
+    }
+
+    async function initProfile() {
+      const authed = await requireAuth('nexora_profil.html');
+      if (!authed) return;
+      NX.ready(async () => {
+        const user    = await NX.getUser();
+        const profile = await NX.getProfile(user.id);
+
+        const name     = profile?.full_name || user.email || '';
+        const initials = name.split(/[\s@]/).filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';
+        const isPremium = profile?.plan === 'premium';
+
+        // Hero
+        document.getElementById('prof-avatar').textContent = initials;
+        document.getElementById('prof-name').textContent   = name || 'My Profile';
+        document.getElementById('prof-school').textContent = (profile?.school_name||'—') + (profile?.field_of_study ? ' · '+profile.field_of_study : '') + (profile?.study_level ? ' · '+profile.study_level : '');
+        document.getElementById('prof-plan-badge').innerHTML = isPremium
+          ? '<span class="premium-badge">⚡ Premium Member</span>'
+          : '<span class="free-badge">Free Plan · <a href="nexora_premium.html" style="color:var(--primary);text-decoration:none;font-weight:600;">Upgrade →</a></span>';
+
+        // Fill fields
+        document.getElementById('p-name').value   = profile?.full_name || '';
+        document.getElementById('p-phone').value  = profile?.phone || '';
+        document.getElementById('p-bio').value    = profile?.bio || '';
+        document.getElementById('p-school').value = profile?.school_name || '';
+        document.getElementById('p-field').value  = profile?.field_of_study || '';
+        document.getElementById('p-lang').value   = profile?.language || 'en';
+        if (profile?.study_level) document.getElementById('p-level').value = profile.study_level;
+        document.getElementById('p-email').value  = user.email || '';
+
+        // Load schools
+        const schools = await NX.getSchools();
+        const dl = document.getElementById('schools-list');
+        schools.forEach(s => { const o=document.createElement('option'); o.value=s.name; dl.appendChild(o); });
+
+        NX.updateHeaderAvatar();
+        loadStorage();
+      });
+    }
+
+    async function saveProfile() {
+      NX.ready(async () => {
+        const user = await NX.getUser();
+        if (!user) return;
+        const { error } = await NX.client().from('profiles').upsert({
+          id: user.id,
+          full_name: document.getElementById('p-name').value.trim(),
+          phone: document.getElementById('p-phone').value.trim(),
+          bio: document.getElementById('p-bio').value.trim(),
+          school_name: document.getElementById('p-school').value.trim(),
+          field_of_study: document.getElementById('p-field').value.trim(),
+          study_level: document.getElementById('p-level').value,
+          language: document.getElementById('p-lang').value,
+        });
+        const msg = document.getElementById('info-msg');
+        if (error) { msg.textContent='✕ '+error.message; msg.className='save-msg error'; }
+        else { msg.textContent='✓ Profile saved successfully!'; msg.className='save-msg success'; NX.updateHeaderAvatar(); }
+        msg.style.display='block';
+        setTimeout(()=>msg.style.display='none', 3000);
+      });
+    }
+
+    async function saveSecurity() {
+      const newpass  = document.getElementById('p-newpass').value;
+      const confirm  = document.getElementById('p-confirmpass').value;
+      const email    = document.getElementById('p-email').value.trim();
+      const msg      = document.getElementById('security-msg');
+      msg.style.display='none';
+      if (newpass && newpass!==confirm) { msg.textContent='✕ Passwords do not match.'; msg.className='save-msg error'; msg.style.display='block'; return; }
+      if (newpass && newpass.length<6)  { msg.textContent='✕ Password must be at least 6 characters.'; msg.className='save-msg error'; msg.style.display='block'; return; }
+      const updates = {};
+      if (email) updates.email = email;
+      if (newpass) updates.password = newpass;
+      if (!Object.keys(updates).length) return;
+      const { error } = await NX.client().auth.updateUser(updates);
+      if (error) { msg.textContent='✕ '+error.message; msg.className='save-msg error'; }
+      else { msg.textContent='✓ Security updated!'; msg.className='save-msg success'; }
+      msg.style.display='block';
+      setTimeout(()=>msg.style.display='none', 3000);
+    }
+
+    async function loadMyDocs() {
+      const user = await NX.getUser();
+      if (!user) return;
+      const { data } = await NX.client().from('documents').select('*').eq('uploader_id', user.id).order('created_at', { ascending: false });
+      const container = document.getElementById('my-docs-list');
+      if (!data || !data.length) { container.innerHTML='<div class="empty-state">You haven\'t uploaded any documents yet.</div>'; return; }
+      container.innerHTML = data.map(d=>`
+        <div class="doc-row">
+          <div>
+            <div class="name">${d.title}</div>
+            <div class="meta">${d.subject||'—'} · ${d.study_level||'—'} · ${d.downloads||0} downloads</div>
+          </div>
+          <span class="doc-type-pill">${d.doc_type||'note'}</span>
+        </div>`).join('');
+    }
+
+    async function loadStorage() {
+      NX.ready(async () => {
+        const user    = await NX.getUser();
+        const profile = await NX.getProfile(user.id);
+        const used    = profile?.storage_used_mb || 0;
+        const isPremium = profile?.plan === 'premium';
+        const limit   = isPremium ? Infinity : 500;
+        const pct     = isPremium ? 0 : Math.min(100, (used/500)*100);
+
+        document.getElementById('storage-text').textContent    = isPremium ? used.toFixed(1)+' MB / Unlimited' : used.toFixed(1)+' MB / 500 MB';
+        document.getElementById('storage-bar').style.width     = pct+'%';
+        document.getElementById('stor-docs').textContent       = profile?.documents_uploaded || 0;
+        document.getElementById('stor-used').textContent       = used.toFixed(1)+' MB';
+        document.getElementById('stor-limit').textContent      = isPremium ? 'Unlimited (Premium)' : '500 MB (Free)';
+        document.getElementById('stor-avail').textContent      = isPremium ? 'Unlimited' : (500-used).toFixed(1)+' MB';
+        document.getElementById('storage-upgrade-msg').innerHTML = isPremium
+          ? '<span style="color:var(--accent);">⚡ Unlimited storage with your Premium plan.</span>'
+          : `${pct.toFixed(0)}% used · <a href="nexora_premium.html">Upgrade to Premium for unlimited storage →</a>`;
+      });
+    }
+
+    initProfile();
+  </script>
+</body>
+</html>
